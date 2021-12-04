@@ -1,21 +1,56 @@
 import { Text, TouchableOpacity, View, StyleSheet, Dimensions, Alert } from "react-native";
 import React from "react";
 import { TextInput } from "react-native-gesture-handler";
+import Utils from "../../utils/Utils";
+import axios from "axios";
 
 
 const dimensions = Dimensions.get("screen");
 export default function LoginScreen({ navigation }) {
-
     const [state, setState] = React.useState({
         username: "",
-        password: ""
-    })
+        password: "",
+        loggedIn: false,
+        message: ""
+    });
+    // React.useEffect(() => {
+    //     if (state.isloggedIn == true) {
+    //         navigation.navigate("Home", {
+    //             user: state.username
+    //         });
+    //     }
+    // }, [state.isloggedIn])
+
+
     function login(user, pass) {
-        console.log(user, pass)
-        //add database user login check here
-        navigation.navigate("Home", {
-            user: user
-        });
+        const data = {
+            username: user,
+            password: pass
+        }
+        fetch(Utils.baseurl + "/api/users/login", {
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: "POST"
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                let response = JSON.parse(JSON.stringify(data));
+                if (response.User != null) {
+                    setState({
+                        ...state,
+                        message: response.message,
+                        loggedIn: true
+                    });
+                    navigation.navigate("Home", {
+                        loggedInUser: response.User.username
+                    })
+
+                }
+            }).catch(function (err) {
+                console.log(err)
+            });
     }
     return (<View style={
         styles.container
@@ -25,7 +60,7 @@ export default function LoginScreen({ navigation }) {
             ...styles.loginView
         }}>
             <Text style={{
-                ...styles.heading, 
+                ...styles.heading,
                 marginBottom: 10
             }}>Please Log In</Text>
             <TextInput placeholder="Enter your username" style={styles.inputSize} onChange={value => {

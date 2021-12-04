@@ -1,5 +1,6 @@
 import { Text, View, StyleSheet, TouchableOpacity, Dimensions, TextInput, Alert } from "react-native";
 import React from "react";
+import Utils from "../../utils/Utils";
 
 const dimensions = Dimensions.get("screen");
 export default function RegisterScreen({ navigation }) {
@@ -8,8 +9,25 @@ export default function RegisterScreen({ navigation }) {
         password: "",
         email: ""
     })
-    function register(mail, uname, pass) {
-        console.log(mail, uname, pass)
+    function register(uname, pass) {
+        fetch(Utils.baseurl + "/api/users/register", {
+            method: "POST",
+            body: JSON.stringify({
+                username: uname,
+                password: pass
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(resp => resp.json())
+            .then(data => {
+                let response = JSON.parse(JSON.stringify(data));
+                if (response.User != null) {
+                    navigation.navigate("Login");
+                }
+            }).catch(err => {
+                console.log(err)
+            })
     }
     return (
         <View style={styles.container}>
@@ -37,9 +55,8 @@ export default function RegisterScreen({ navigation }) {
                     });
                 }} keyboardType="default" value={state.password} />
                 <TouchableOpacity onPress={() => {
-                    if (state.username.length > 0 && state.password.length > 0 && state.email > 0) {
+                    if (state.username.length > 0 && state.password.length > 0 && state.email.length > 0) {
                         register(state.email, state.username, state.password);
-                        navigation.navigate("Login");
                     }
                     else {
                         Alert.alert("Please fill all details.All columns are mandatory")
