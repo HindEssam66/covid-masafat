@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { View, I18nManager, StyleSheet, Dimensions } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from "expo-location"
+import Utils from "../utils/Utils";
 
 
 const dimensions = Dimensions.get("window");
@@ -40,6 +41,28 @@ export default function HomeMaps({ route }) {
          })
  } */
 
+    function updateUserLocation(username, lng, lat) {
+        fetch(Utils.baseurl + "api/users/location", {
+            body: JSON.stringify({
+                "username": username,
+                "longitude": lng,
+                "latitude": lat
+            }),
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: "post"
+        })
+            .then(resp => resp.json())
+            .then(data => {
+                let response = JSON.parse(JSON.stringify(data));
+                console.log(response)
+            }).catch((erro) => {
+                console.log(erro)
+            })
+
+    }
+
     const region = {
         latitude: lat,
         longitude: lgtd,
@@ -58,15 +81,12 @@ export default function HomeMaps({ route }) {
             ref={mapref}
             provider={PROVIDER_GOOGLE}
             onMapReady={() => {
-                //Save the user location on firebase
-                //And marker is shown
-                mapref.current.animateToRegion(region)
+                mapref.current.animateToRegion(region);
+                updateUserLocation(route.params.loggedInUser, region.longitude, region.latitude)
 
             }}
             onRegionChangeComplete={(new_region) => {
-                // console.log("New Location",new_region)
-
-                //update new user location
+                updateUserLocation(route.params.loggedInUser, new_region.longitude, new_region.latitude)
             }}
             initialCamera={{
                 zoom: 10000,

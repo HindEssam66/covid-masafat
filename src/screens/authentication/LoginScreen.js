@@ -74,7 +74,7 @@ export default function LoginScreen({ navigation }) {
                     ...state,
                     password: value.nativeEvent.text.toString()
                 })
-            }} value={state.password} />
+            }} value={state.password} secureTextEntry={true}/>
 
             <TouchableOpacity onPress={() => {
                 if (state.username.length > 0 && state.password.length > 0) {
