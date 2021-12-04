@@ -7,7 +7,6 @@ import * as Location from "expo-location"
 const dimensions = Dimensions.get("window");
 I18nManager.allowRTL(false);
 export default function HomeMaps({ route }) {
-    console.log(route.params);
     const [lat, setLat] = React.useState(24.774265);
     const [lgtd, setLong] = React.useState(46.738586);
     const mapref = React.useRef(null);
@@ -24,7 +23,6 @@ export default function HomeMaps({ route }) {
             }
 
             let location = await Location.getCurrentPositionAsync({});
-
             setLong(location.coords.longitude);
             setLat(location.coords.latitude)
             setLocation(location);
@@ -84,7 +82,9 @@ export default function HomeMaps({ route }) {
             <Marker coordinate={{
                 latitude: region.latitude,
                 longitude: region.longitude
-            }} description="Your Are located at" draggable={true} />
+            }} description={
+                route.params.loggedInUser
+            } draggable={true} />
         </MapView>
     );
 
