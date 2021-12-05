@@ -66,7 +66,7 @@ export default function RegisterScreen({ navigation }) {
                         ...state,
                         password: value.nativeEvent.text.toString()
                     });
-                }} keyboardType="default" value={state.password} />
+                }} keyboardType="default" value={state.password} secureTextEntry={true} />
                 {state.formComplete ? <ActivityIndicator size="large" color="#0000ff" /> :
                     <TouchableOpacity onPress={() => {
                         if (state.username.length > 0 && state.password.length > 0 && state.email.length > 0) {
