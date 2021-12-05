@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, TouchableOpacity, Dimensions, TextInput, Alert, ActivityIndicator } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Dimensions, TextInput, Alert, ActivityIndicator, ToastAndroid, Platform } from "react-native";
 import React from "react";
 import Utils from "../../utils/Utils";
 
@@ -29,17 +29,41 @@ export default function RegisterScreen({ navigation }) {
                         formComplete: false
                     });
                     navigation.navigate("Login");
+                    Platform.OS === "android" ? ToastAndroid.showWithGravity(
+                        response.message,
+                        ToastAndroid.SHORT,
+                        ToastAndroid.CENTER
+                    ) : Alert(
+                        response.message
+                    );
                 }
-                setState({
-                    ...state,
-                    formComplete: false
-                });
+                else {
+                    setState({
+                        ...state,
+                        formComplete: false
+                    });
+                    Platform.OS === "android" ? ToastAndroid.showWithGravity(
+                        response.message,
+                        ToastAndroid.SHORT,
+                        ToastAndroid.CENTER
+                    ) : Alert(
+                        response.message
+                    );
+                }
+
             }).catch(err => {
                 console.log(err);
                 setState({
                     ...state,
                     formComplete: false
                 });
+                Platform.OS === "android" ? ToastAndroid.showWithGravity(
+                    err.toString(),
+                    ToastAndroid.SHORT,
+                    ToastAndroid.CENTER
+                ) : Alert(
+                    err.toString()
+                );
             })
     }
     return (
@@ -66,7 +90,7 @@ export default function RegisterScreen({ navigation }) {
                         ...state,
                         password: value.nativeEvent.text.toString()
                     });
-                }} keyboardType="default" value={state.password} />
+                }} keyboardType="default" value={state.password} secureTextEntry={true} />
                 {state.formComplete ? <ActivityIndicator size="large" color="#0000ff" /> :
                     <TouchableOpacity onPress={() => {
                         if (state.username.length > 0 && state.password.length > 0 && state.email.length > 0) {

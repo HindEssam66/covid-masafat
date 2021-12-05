@@ -1,8 +1,7 @@
-import { Text, TouchableOpacity, View, StyleSheet, Dimensions, Alert, ActivityIndicator } from "react-native";
+import { Text, TouchableOpacity, View, StyleSheet, Dimensions, Alert, ActivityIndicator, ToastAndroid, Platform } from "react-native";
 import React from "react";
 import { TextInput } from "react-native-gesture-handler";
 import Utils from "../../utils/Utils";
-import axios from "axios";
 
 
 const dimensions = Dimensions.get("screen");
@@ -12,7 +11,8 @@ export default function LoginScreen({ navigation }) {
         password: "",
         loggedIn: false,
         message: "",
-        isformcomplete: false
+        isformcomplete: false,
+        toastvisible: false
     });
     // React.useEffect(() => {
     //     if (state.isloggedIn == true) {
@@ -43,23 +43,47 @@ export default function LoginScreen({ navigation }) {
                         ...state,
                         message: response.message,
                         loggedIn: true,
-                        isformcomplete: false
+                        isformcomplete: false,
+                        toastvisible: true
                     });
+                    Platform.OS === "android" ? ToastAndroid.showWithGravity(
+                        response.message,
+                        ToastAndroid.SHORT,
+                        ToastAndroid.CENTER
+                    ) : Alert(
+                        response.message
+                    );
                     navigation.navigate("Home", {
                         loggedInUser: response.User.username
-                    })
-
-                };
-                setState({
-                    ...state,
-                    isformcomplete: false
-                });
+                    });
+                }
+                else {
+                    setState({
+                        ...state,
+                        message: response.message,
+                        isformcomplete: false
+                    });
+                    Platform.OS === "android" ? ToastAndroid.showWithGravity(
+                        response.message,
+                        ToastAndroid.SHORT,
+                        ToastAndroid.CENTER
+                    ) : Alert(
+                        response.message
+                    );
+                }
             }).catch(function (err) {
                 console.log(err);
                 setState({
                     ...state,
                     isformcomplete: false
                 });
+                Platform.OS === "android" ? ToastAndroid.showWithGravity(
+                    err.toString(),
+                    ToastAndroid.SHORT,
+                    ToastAndroid.CENTER
+                ) : Alert(
+                    err.toString()
+                );
             });
     }
     return (<View style={
