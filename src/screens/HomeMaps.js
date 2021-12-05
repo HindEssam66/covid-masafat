@@ -105,7 +105,7 @@ export default function HomeMaps({ route }) {
             }} description={
                 route.params.loggedInUser
             } draggable={true} />
-        </MapView>
+        </MapView> 
     );
 
 

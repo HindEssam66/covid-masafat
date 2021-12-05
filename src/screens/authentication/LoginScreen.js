@@ -3,7 +3,7 @@ import React from "react";
 import { TextInput } from "react-native-gesture-handler";
 import Utils from "../../utils/Utils";
 import axios from "axios";
-
+import {auth} from "../../../firebase";
 
 const dimensions = Dimensions.get("screen");
 export default function LoginScreen({ navigation }) {
@@ -52,6 +52,19 @@ export default function LoginScreen({ navigation }) {
                 console.log(err)
             });
     }
+
+    const handlelogin = () =>{
+        auth 
+        .signInWithEmailAndPassword (email,pass)
+        
+        .then (userCredentials=>{ 
+        const user = userCredentials.user;
+        console.log('logged in with:',user.email);
+        
+        })
+        .catch (error => alert(error.massage)) 
+    }
+        
     return (<View style={
         styles.container
     }>
@@ -76,7 +89,7 @@ export default function LoginScreen({ navigation }) {
                 })
             }} value={state.password} secureTextEntry={true}/>
 
-            <TouchableOpacity onPress={() => {
+            <TouchableOpacity onPress={ () => {
                 if (state.username.length > 0 && state.password.length > 0) {
                     login(state.username, state.password);
                 }

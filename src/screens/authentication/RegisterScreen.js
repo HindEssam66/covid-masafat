@@ -2,13 +2,18 @@ import { Text, View, StyleSheet, TouchableOpacity, Dimensions, TextInput, Alert 
 import React from "react";
 import Utils from "../../utils/Utils";
 
+
 const dimensions = Dimensions.get("screen");
+
+
 export default function RegisterScreen({ navigation }) {
     const [state, setState] = React.useState({
         username: "",
         password: "",
         email: ""
     })
+
+    
     function register(uname, pass) {
         fetch(Utils.baseurl + "/api/users/register", {
             method: "POST",
@@ -29,6 +34,20 @@ export default function RegisterScreen({ navigation }) {
                 console.log(err)
             })
     }
+
+    
+/*const handleSignUp = () => {
+    auth
+    .createUserWithEmailAndPassword(email,pass)
+    .then (userCredentials=>{ 
+    const user = userCredentials.user;
+    console.log('registeres with:',user.email);
+    
+    })
+    .catch (error => alert(error.massage))
+    
+    }*/
+
     return (
         <View style={styles.container}>
             <View style={{ ...styles.registerView }}>
@@ -69,7 +88,7 @@ export default function RegisterScreen({ navigation }) {
                     <Text style={{
                         ...styles.heading, fontWeight: "normal", fontSize: 16
                     }}>Already Have an Account? </Text>
-                    <Text style={styles.loginText} onPress={() => navigation.navigate("Login")}>Log in Here</Text>
+                    <Text style={styles.loginText} onPress={/*handleSignUp*/ () => navigation.navigate("Login")}>Log in Here</Text>
                 </View>
             </View>
         </View>);
