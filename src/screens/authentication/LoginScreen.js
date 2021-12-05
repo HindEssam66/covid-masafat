@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View, StyleSheet, Dimensions, Alert } from "react-native";
+import { Text, TouchableOpacity, View, StyleSheet, Dimensions, Alert, ActivityIndicator } from "react-native";
 import React from "react";
 import { TextInput } from "react-native-gesture-handler";
 import Utils from "../../utils/Utils";
@@ -11,7 +11,8 @@ export default function LoginScreen({ navigation }) {
         username: "",
         password: "",
         loggedIn: false,
-        message: ""
+        message: "",
+        isformcomplete: false
     });
     // React.useEffect(() => {
     //     if (state.isloggedIn == true) {
@@ -41,15 +42,24 @@ export default function LoginScreen({ navigation }) {
                     setState({
                         ...state,
                         message: response.message,
-                        loggedIn: true
+                        loggedIn: true,
+                        isformcomplete: false
                     });
                     navigation.navigate("Home", {
                         loggedInUser: response.User.username
                     })
 
-                }
+                };
+                setState({
+                    ...state,
+                    isformcomplete: false
+                });
             }).catch(function (err) {
-                console.log(err)
+                console.log(err);
+                setState({
+                    ...state,
+                    isformcomplete: false
+                });
             });
     }
     return (<View style={
@@ -74,19 +84,24 @@ export default function LoginScreen({ navigation }) {
                     ...state,
                     password: value.nativeEvent.text.toString()
                 })
-            }} value={state.password} secureTextEntry={true}/>
+            }} value={state.password} secureTextEntry={true} />
+            {state.isformcomplete ? <ActivityIndicator size="large" color="#0000ff" /> :
+                <TouchableOpacity onPress={() => {
+                    if (state.username.length > 0 && state.password.length > 0) {
+                        setState({
+                            ...state,
+                            isformcomplete: true
+                        });
+                        login(state.username, state.password);
+                    }
+                    else {
+                        Alert.alert("Invalid or Empty username or password")
+                    }
 
-            <TouchableOpacity onPress={() => {
-                if (state.username.length > 0 && state.password.length > 0) {
-                    login(state.username, state.password);
-                }
-                else {
-                    Alert.alert("Invalid or Empty username or password")
-                }
-
-            }} style={styles.loginbutton}>
-                <Text style={styles.loginText}>Login</Text>
-            </TouchableOpacity>
+                }} style={styles.loginbutton}>
+                    <Text style={styles.loginText}>Login</Text>
+                </TouchableOpacity>
+            }
             <View style={styles.rowtexts}>
                 <Text style={{
                     ...styles.heading, fontWeight: "normal", fontSize: 16

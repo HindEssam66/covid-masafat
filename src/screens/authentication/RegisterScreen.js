@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, TouchableOpacity, Dimensions, TextInput, Alert } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Dimensions, TextInput, Alert, ActivityIndicator } from "react-native";
 import React from "react";
 import Utils from "../../utils/Utils";
 
@@ -7,8 +7,9 @@ export default function RegisterScreen({ navigation }) {
     const [state, setState] = React.useState({
         username: "",
         password: "",
-        email: ""
-    })
+        email: "",
+        formComplete: false
+    });
     function register(uname, pass) {
         fetch(Utils.baseurl + "/api/users/register", {
             method: "POST",
@@ -23,10 +24,22 @@ export default function RegisterScreen({ navigation }) {
             .then(data => {
                 let response = JSON.parse(JSON.stringify(data));
                 if (response.User != null) {
+                    setState({
+                        ...state,
+                        formComplete: false
+                    });
                     navigation.navigate("Login");
                 }
+                setState({
+                    ...state,
+                    formComplete: false
+                });
             }).catch(err => {
-                console.log(err)
+                console.log(err);
+                setState({
+                    ...state,
+                    formComplete: false
+                });
             })
     }
     return (
@@ -54,17 +67,23 @@ export default function RegisterScreen({ navigation }) {
                         password: value.nativeEvent.text.toString()
                     });
                 }} keyboardType="default" value={state.password} />
-                <TouchableOpacity onPress={() => {
-                    if (state.username.length > 0 && state.password.length > 0 && state.email.length > 0) {
-                        register(state.email, state.username, state.password);
-                    }
-                    else {
-                        Alert.alert("Please fill all details.All columns are mandatory")
-                    }
+                {state.formComplete ? <ActivityIndicator size="large" color="#0000ff" /> :
+                    <TouchableOpacity onPress={() => {
+                        if (state.username.length > 0 && state.password.length > 0 && state.email.length > 0) {
+                            setState({
+                                ...state,
+                                formComplete: true
+                            });
+                            register(state.username, state.password);
+                        }
+                        else {
+                            Alert.alert("Please fill all details.All columns are mandatory")
+                        }
 
-                }} style={styles.registerbutton}>
-                    <Text style={styles.registerText}>Submit</Text>
-                </TouchableOpacity>
+                    }} style={styles.registerbutton}>
+                        <Text style={styles.registerText}>Submit</Text>
+                    </TouchableOpacity>
+                }
                 <View style={styles.rowtexts}>
                     <Text style={{
                         ...styles.heading, fontWeight: "normal", fontSize: 16
