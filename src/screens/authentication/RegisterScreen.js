@@ -1,6 +1,7 @@
-import { Text, View, StyleSheet, TouchableOpacity, Dimensions, TextInput, Alert, ActivityIndicator, ToastAndroid, Platform } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Dimensions, TextInput, Alert, ActivityIndicator, Platform } from "react-native";
 import React from "react";
 import Utils from "../../utils/Utils";
+import Toast from "react-native-simple-toast";
 
 const dimensions = Dimensions.get("screen");
 export default function RegisterScreen({ navigation }) {
@@ -28,27 +29,16 @@ export default function RegisterScreen({ navigation }) {
                         ...state,
                         formComplete: false
                     });
+                    Toast.showWithGravity(response.message, Toast.LONG, Toast.TOP);
                     navigation.navigate("Login");
-                    Platform.OS === "android" ? ToastAndroid.showWithGravity(
-                        response.message,
-                        ToastAndroid.SHORT,
-                        ToastAndroid.CENTER
-                    ) : Alert(
-                        response.message
-                    );
+
                 }
                 else {
                     setState({
                         ...state,
                         formComplete: false
                     });
-                    Platform.OS === "android" ? ToastAndroid.showWithGravity(
-                        response.message,
-                        ToastAndroid.SHORT,
-                        ToastAndroid.CENTER
-                    ) : Alert(
-                        response.message
-                    );
+                    Toast.showWithGravity(response.message, Toast.LONG, Toast.TOP);
                 }
 
             }).catch(err => {
@@ -57,13 +47,7 @@ export default function RegisterScreen({ navigation }) {
                     ...state,
                     formComplete: false
                 });
-                Platform.OS === "android" ? ToastAndroid.showWithGravity(
-                    err.toString(),
-                    ToastAndroid.SHORT,
-                    ToastAndroid.CENTER
-                ) : Alert(
-                    err.toString()
-                );
+                Toast.showWithGravity(err.toString(), Toast.LONG, Toast.TOP);
             })
     }
     return (
