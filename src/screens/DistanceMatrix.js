@@ -1,8 +1,4 @@
 
-
-
-
-
 var origin1 = new google.maps.LatLng(55.930385, -3.118425);
 var origin2 = 'Greenwich, England';
 var destinationA = 'Stockholm, Sweden';
