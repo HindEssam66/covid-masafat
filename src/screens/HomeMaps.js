@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React  from "react";
 import { View, I18nManager, StyleSheet, Dimensions, Alert } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from "expo-location"
@@ -50,12 +50,11 @@ export default function HomeMaps({ route }) {
 
  React.useEffect(() => {
     (async () => {
-        let { status } = await Location.requestBackgroundPermissionsAsync();
+        let { status } = await Location.requestPermissionsAsync();
         if (status !== 'granted') {
             setErrorMsg('Permission to access location was denied');
             return;
         }
-
         let location = await Location.getCurrentPositionAsync({});
         setLong(location.coords.longitude);
         setLat(location.coords.latitude)
@@ -70,7 +69,6 @@ export default function HomeMaps({ route }) {
             const data = {
                 longitude,
                 latitude,
-              // userid:Firebase.auth().currentUser.uid
                userid
             }
             Firebase.firestore().collection("locations").add(data);
@@ -94,43 +92,39 @@ export default function HomeMaps({ route }) {
         longitude: lgtd,
         longitudeDelta: longDelta,
         latitudeDelta: latDelta,
-        //username: uname,
-
     }
 
 
     
-   const _getLocationAsync = async () => {
+//    const _getLocationAsync = async () => {
 
-    await Location.startLocationUpdatesAsync("background-location-task", {
-      enableHighAccuracy: true,
+//     await Location.startLocationUpdatesAsync("background-location-task", {
+//       enableHighAccuracy: true,
 
-      distanceInterval: 1,
-      timeInterval: 50
-    });
-    const myLocation = await Location.watchPositionAsync(
-      {
-        enableHighAccuracy: true,
-        distanceInterval: 1,
-        timeInterval: 50
-      },
-      newLocation => {
-        let { coords } = newLocation;
-        console.log("Testing ....",coords)
-        let region = {
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-          latitudeDelta: 0.045,
-          longitudeDelta: 0.045
-        };
-      },
-      error => console.log(error)
-    );
-    console.log("lilyan",myLocation);
-    return myLocation;
+//       distanceInterval: 1,
+//       timeInterval: 50
+//     });
+//     const myLocation = await Location.watchPositionAsync(
+//       {
+//         enableHighAccuracy: true,
+//         distanceInterval: 1,
+//         timeInterval: 50
+//       },
+//       newLocation => {
+//         let { coords } = newLocation;
+//         console.log("Testing ....",coords)
+//         let region = {
+//           latitude: coords.latitude,
+//           longitude: coords.longitude,
+//           latitudeDelta: 0.045,
+//           longitudeDelta: 0.045
+//         };
+//       },
+//       error => console.log(error)
+//     );
+//     return myLocation;
+//   };
 
-
-  };
   fetchDistanceBetweenPoints = (user1lat, user1long, user2lat, user2long) => {
     var urlToFetchDistance = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='+user1lat+','+user1long+'&destinations='+user2lat+'%2C'+user2long+'&key=' + "YOUR_GOOGLE_DIRECTIONS_API_KEY";
     fetch(urlToFetchDistance)

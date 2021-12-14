@@ -1,4 +1,3 @@
-import {getDistance} from 'geolib';
 import * as Location from "expo-location";
 //import * as Permissions from "expo-permissions";
 import HomeMaps from './HomeMaps';

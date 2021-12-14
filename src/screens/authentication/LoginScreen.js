@@ -1,7 +1,6 @@
 import { Text, TouchableOpacity, View, StyleSheet, Dimensions, Alert, ActivityIndicator, ToastAndroid, Platform ,TextInput} from "react-native";
 import React from "react";
 import Firebase from '../../../firebase';
-import Utils from "../../utils/Utils";
 
 
 const dimensions = Dimensions.get("screen");
@@ -41,14 +40,14 @@ export default function LoginScreen({ navigation }) {
             });
             }).catch((err)=>{
                 
-                Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, Toast.LONG, Toast.TOP):
+                Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, ToastAndroid.LONG, ToastAndroid.TOP):
                 Alert.alert(err.message);
                 state.isformcomplete= false; 
                 setState(state);
             })
         } catch (err) {
           
-          Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, Toast.LONG, Toast.TOP):
+          Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, ToastAndroid.LONG, ToastAndroid.TOP):
           Alert.alert(err.message);
           state.isformcomplete= false; 
           setState(state);
