@@ -1,13 +1,13 @@
 import { Text, TouchableOpacity, View, StyleSheet, Dimensions, Alert, ActivityIndicator, ToastAndroid, Platform ,TextInput} from "react-native";
 import React from "react";
+import Firebase from '../../../firebase';
 import Utils from "../../utils/Utils";
-import Toast from "react-native-simple-toast";
 
 
 const dimensions = Dimensions.get("screen");
 export default function LoginScreen({ navigation }) {
     const [state, setState] = React.useState({
-        username: "",
+        email: "",
         password: "",
         loggedIn: false,
         message: "",
@@ -23,51 +23,38 @@ export default function LoginScreen({ navigation }) {
     // }, [state.isloggedIn])
 
 
-    function login(user, pass) {
-        const data = {
-            username: user,
-            password: pass
-        }
-        fetch(Utils.baseurl + "/api/users/login", {
-            body: JSON.stringify(data),
-            headers: {
-                "Content-Type": "application/json"
-            },
-            method: "POST"
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                let response = JSON.parse(JSON.stringify(data));
-                if (response.User != null) {
-                    setState({
-                        ...state,
-                        message: response.message,
-                        loggedIn: true,
-                        isformcomplete: false,
-                        toastvisible: true
-                    });
-                    Toast.showWithGravity(response.message, Toast.LONG, Toast.TOP);
-                    navigation.navigate("Home", {
-                        loggedInUser: response.User.username
+    
+
+    const signIn = () => {
+        try {
+          Firebase
+            .auth() 
+            .signInWithEmailAndPassword(state.email,state.password).then((response)=>{
+                console.log("Login  response",response.user.email)
+                if(response.user.email==="masafat"){
+                    navigation.navigate("AdminPage", {
+                        useremail: state.email
                     });
                 }
-                else {
-                    setState({
-                        ...state,
-                        message: response.message,
-                        isformcomplete: false
-                    });
-                    Toast.showWithGravity(response.message, Toast.LONG, Toast.TOP);
-                }
-            }).catch(function (err) {
-                console.log(err);
-                setState({
-                    ...state,
-                    isformcomplete: false
-                });
-                Toast.showWithGravity(err.toString(), Toast.LONG, Toast.TOP);
+                navigation.navigate("Home", {
+                useremail: state.email
             });
-    }
+            }).catch((err)=>{
+                
+                Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, Toast.LONG, Toast.TOP):
+                Alert.alert(err.message);
+                state.isformcomplete= false; 
+                setState(state);
+            })
+        } catch (err) {
+          
+          Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, Toast.LONG, Toast.TOP):
+          Alert.alert(err.message);
+          state.isformcomplete= false; 
+          setState(state);
+        }
+      }
+
     return (<View style={
         styles.container
     }>
@@ -79,12 +66,12 @@ export default function LoginScreen({ navigation }) {
                 ...styles.heading,
                 marginBottom: 10
             }}>Please Log In</Text>
-            <TextInput placeholder="Enter your username" style={styles.inputSize} onChange={value => {
+            <TextInput placeholder="Enter your email" style={styles.inputSize} onChange={value => {
                 setState({
                     ...state,
-                    username: value.nativeEvent.text.toString()
+                    email: value.nativeEvent.text.toString()
                 })
-            }} keyboardType="default" value={state.username} />
+            }} keyboardType="default" value={state.email} />
             <TextInput placeholder="Enter your Password" style={styles.inputSize} onChange={value => {
                 setState({
                     ...state,
@@ -93,15 +80,17 @@ export default function LoginScreen({ navigation }) {
             }} value={state.password} secureTextEntry={true} />
             {state.isformcomplete ? <ActivityIndicator size="large" color="#0000ff" /> :
                 <TouchableOpacity onPress={() => {
-                    if (state.username.length > 0 && state.password.length > 0) {
+                    if (state.email.length > 0 && state.password.length > 0) {
                         setState({
                             ...state,
                             isformcomplete: true
                         });
-                        login(state.username, state.password);
+                       
+                       //signIn(state.username,state.password);
+                       signIn();
                     }
                     else {
-                        Alert.alert("Invalid or Empty username or password")
+                        Alert.alert("Invalid or Empty email or password")
                     }
 
                 }} style={styles.loginbutton}>

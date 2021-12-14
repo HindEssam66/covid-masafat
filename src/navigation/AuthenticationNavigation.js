@@ -5,13 +5,15 @@ import LoginScreen from "../screens/authentication/LoginScreen";
 import RegisterScreen from "../screens/authentication/RegisterScreen";
 import HomeMaps from "../screens/HomeMaps";
 import { createStackNavigator } from "@react-navigation/stack";
+import AdminLandingPage from "../screens/authentication/AdminLandingPage";
 
 
 const LoginStack = createStackNavigator();
 
 export default function AuthenticationNavigation() {
     return (
-        <LoginStack.Navigator initalRouteName="Login" screenOptions={{
+        <LoginStack.Navigator initalRouteName="Login" 
+        screenOptions={{
             headerTitleAlign: "center",
             headerTitleStyle: {
                 fontSize: 20,
@@ -27,6 +29,9 @@ export default function AuthenticationNavigation() {
             }} />
             <LoginStack.Screen name="Home" component={HomeMaps} options={{
                 headerTitle: "Home Page"
+            }} />
+             <LoginStack.Screen name="AdminPage" component={AdminLandingPage} options={{
+                headerTitle: "Admin Page"
             }} />
         </LoginStack.Navigator>
     );

@@ -1,7 +1,8 @@
 import { Text, View, StyleSheet, TouchableOpacity, Dimensions, TextInput, Alert, ActivityIndicator, Platform } from "react-native";
 import React from "react";
 import Utils from "../../utils/Utils";
-import Toast from "react-native-simple-toast";
+import Firebase from '../../../firebase';
+
 
 const dimensions = Dimensions.get("screen");
 export default function RegisterScreen({ navigation }) {
@@ -11,45 +12,36 @@ export default function RegisterScreen({ navigation }) {
         email: "",
         formComplete: false
     });
-    function register(uname, pass) {
-        fetch(Utils.baseurl + "/api/users/register", {
-            method: "POST",
-            body: JSON.stringify({
-                username: uname,
-                password: pass
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(resp => resp.json())
-            .then(data => {
-                let response = JSON.parse(JSON.stringify(data));
-                if (response.User != null) {
-                    setState({
-                        ...state,
-                        formComplete: false
-                    });
-                    Toast.showWithGravity(response.message, Toast.LONG, Toast.TOP);
-                    navigation.navigate("Login");
 
-                }
-                else {
-                    setState({
-                        ...state,
-                        formComplete: false
-                    });
-                    Toast.showWithGravity(response.message, Toast.LONG, Toast.TOP);
-                }
+    
 
-            }).catch(err => {
-                console.log(err);
-                setState({
-                    ...state,
-                    formComplete: false
-                });
-                Toast.showWithGravity(err.toString(), Toast.LONG, Toast.TOP);
+    const registeration  = () =>{
+        Firebase.auth().createUserWithEmailAndPassword(state.email,state.password).then((response )=>{
+            const currentUser = Firebase.auth().currentUser;
+            Firebase.firestore().collection("users").doc(currentUser.uid).set({
+                email:state.email,
+                username:state.username
+            }).then((resp)=>{
+                Platform.OS=="android"? ToastAndroid.showWithGravity("user added successfully", Toast.LONG, Toast.TOP):
+                Alert.alert("user added successfully");
+                navigation.navigate("Login");
+            }).catch((err)=>{
+                Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, Toast.LONG, Toast.TOP):
+                Alert.alert(err.message);
+                state.formComplete= false; 
+                setState(state);
             })
-    }
+        }).catch((err)=>{
+            Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, Toast.LONG, Toast.TOP):
+            Alert.alert(err.message);
+        
+            state.formComplete= false;
+            setState(state);
+        })
+        
+    } 
+
+
     return (
         <View style={styles.container}>
             <View style={{ ...styles.registerView }}>
@@ -82,7 +74,8 @@ export default function RegisterScreen({ navigation }) {
                                 ...state,
                                 formComplete: true
                             });
-                            register(state.username, state.password);
+                           // register(state.username, state.password);
+                            registeration();
                         }
                         else {
                             Alert.alert("Please fill all details.All columns are mandatory")
@@ -148,3 +141,4 @@ const styles = StyleSheet.create({
         fontWeight: "700"
     }
 })
+
