@@ -1,7 +1,10 @@
 import { Text, TouchableOpacity, View, StyleSheet, Dimensions, Alert, ActivityIndicator, ToastAndroid, Platform ,TextInput,SafeAreaView,StatusBar,Image} from "react-native";
 import React from "react";
 import Firebase from '../../../firebase';
-import styles from "../../../styles";
+import Utils from "../../utils/Utils";
+import styles from './styles';
+import { color } from "react-native-reanimated";
+
 
 const dimensions = Dimensions.get("screen");
 export default function LoginScreen({ navigation }) {
@@ -30,7 +33,7 @@ export default function LoginScreen({ navigation }) {
             .auth() 
             .signInWithEmailAndPassword(state.email,state.password).then((response)=>{
                 console.log("Login  response",response.user.email)
-                if(response.user.email==="masafat@gmail.com"){
+                if(response.user.email==="masafat"){
                     navigation.navigate("AdminPage", {
                         useremail: state.email
                     });
@@ -40,14 +43,14 @@ export default function LoginScreen({ navigation }) {
             });
             }).catch((err)=>{
                 
-                Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, ToastAndroid.LONG, ToastAndroid.TOP):
+                Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, Toast.LONG, Toast.TOP):
                 Alert.alert(err.message);
                 state.isformcomplete= false; 
                 setState(state);
             })
         } catch (err) {
           
-          Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, ToastAndroid.LONG, ToastAndroid.TOP):
+          Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, Toast.LONG, Toast.TOP):
           Alert.alert(err.message);
           state.isformcomplete= false; 
           setState(state);
@@ -55,7 +58,6 @@ export default function LoginScreen({ navigation }) {
       }
 
     return (
-    
         <SafeAreaView style={styles.safeContainer}>
         <StatusBar barStyle="light-content" backgroundColor={'#172774'}/>
         <View style={styles.container}>
@@ -70,7 +72,7 @@ export default function LoginScreen({ navigation }) {
 
       
         <View style={styles.loginbox}>
-        <Text style={styles.tile}>Login Please Here</Text>
+        <Text style={styles.tile}>Login Here</Text>
 
             <View style = {styles.button}>
             <TextInput placeholder="Enter your email" onChange={value => {
@@ -109,23 +111,16 @@ export default function LoginScreen({ navigation }) {
                     }
 
                 }} >
-                   <Text style={{textAlign:'center',marginTop:15, fontSize:'20'}}>Login</Text>
+                   <Text style={{textAlign:'center',marginTop:15, fontSize:'20',color:'#fff'}}>Sumit</Text>
                 </TouchableOpacity>
             }
 
-<Text style ={{textAlign:'left',color:'#fff', marginLeft:10}}>you don't have an account <Text style={{color:'red'}} onPress={() => navigation.navigate("Register")}>Please RegisterYour Account</Text></Text>
-
-
-            <View style={styles.rowtexts}>
-                <Text style={{textAlign:'center',marginTop:15, fontSize:'16'}}>Don't Have an account? </Text>
-                <Text style={{textAlign:'center',marginTop:15, fontSize:'16'}} onPress={() => navigation.navigate("Register")}>Create Account Here</Text>
-            </View>
-
         </View>
-     
+
         </View>
 
 
         </SafeAreaView>
-    ); 
-        }
+    );
+
+}

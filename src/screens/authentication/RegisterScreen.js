@@ -96,7 +96,8 @@ export default function RegisterScreen({ navigation }) {
 }
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,    backgroundColor: '#172774',
+
     },
     registerView: {
         marginTop: dimensions.height * .2,

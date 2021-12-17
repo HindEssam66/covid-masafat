@@ -11,14 +11,30 @@ export default function AdminLandingPage(){
     },[])
 
     const readReadAllDataFromDatabase=()=>{
+        
+
+            const UsersSnapshots =  firebase.firestore().collection('users').get()
+            const users = UsersSnapshots.docs.map(doc => doc.data());
+    
+            const LocationsSnapshots =  firebase.firestore().collection('locations').get()
+            const locations = LocationsSnapshots.docs.map(doc => doc.data());
+            console.log(UsersSnapshots.docs[0].data());
+            UsersSnapshots.docs.forEach((doc) =>{
+                const userId = doc.id;
+                const userData = doc.data();
+                const myLocations = locations.filter((ele) => ele.userId === userId);
+                
+                userData['locations'] = myLocations ; 
+                let userresponse= myLocations;
+                setState({
+                    ...state,
+                    loaded:true,
+                    data:userresponse
+           
+                   });
+                });
+                
         //read all data from database using firebase user array
-      let userresponse=  ["username","email","long","latitude","alert"] //From firebase
-        setState({
-            ...state,
-            loaded:true,
-            data:userresponse
-   
-           });
         //fecth locations from the firebase
         //Get the data and an array
         //userArray (email,username,long,lat,message)

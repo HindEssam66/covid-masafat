@@ -22,7 +22,7 @@ export default function AuthenticationNavigation() {
         }}>
             <LoginStack.Screen name="Login" component={LoginScreen}
                 options={{
-                    headerTitle: " Welcome to Covid 19 Masafat",
+                   headerShown : false
                 }} />
             <LoginStack.Screen name="Register" component={RegisterScreen} options={{
                 headerTitle: "Create an account with us"

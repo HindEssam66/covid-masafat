@@ -1,4 +1,4 @@
-import React  from "react";
+import React from "react";
 import { View, I18nManager, StyleSheet, Dimensions, Alert } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from "expo-location"
@@ -10,82 +10,85 @@ const dimensions = Dimensions.get("window");
 I18nManager.allowRTL(false);
 export default function HomeMaps({ route }) {
 
- 
-    const distance_url=""
+
+    const distance_url = ""
     const [lat, setLat] = React.useState(31.96315);
     const [lgtd, setLong] = React.useState(35.930359);
     const mapref = React.useRef(null);
-    const longDelta = 0.0421;
-    const latDelta = 0.0922
+    let { width, height } = Dimensions.get('window');
+    const aspect_ratio = width / height;
+    const latDelta = 0
+    const longDelta = latDelta * aspect_ratio;
     const [location, setLocation] = React.useState(null);
 
-  /* React.useEffect(() => {
+    /* React.useEffect(() => {
+          (async () => {
+              let { status } = await Location.requestBackgroundPermissionsAsync();
+              if (status !== 'granted') {
+                  setErrorMsg('Permission to access location was denied');
+                  return;
+              }
+  
+              //let location = await Location.getCurrentPositionAsync({});
+              let location=await _getLocationAsync();
+              setLong(location.coords.longitude);
+              setLat(location.coords.latitude)
+              setLocation(location);
+          
+  
+          })();
+      }, []);/*
+  
+  
+      /* if(props!=undefined){
+          userlocation=JSON.stringify(props);
+           setRegion({
+             
+               longitude:userlocation.longitude,
+               latitude:userlocation.latitude
+           })
+   } */
+
+
+    React.useEffect(() => {
         (async () => {
-            let { status } = await Location.requestBackgroundPermissionsAsync();
+            let { status } = await Location.requestPermissionsAsync();
             if (status !== 'granted') {
                 setErrorMsg('Permission to access location was denied');
                 return;
             }
-
-            //let location = await Location.getCurrentPositionAsync({});
-            let location=await _getLocationAsync();
+            let location = await Location.getCurrentPositionAsync({});
             setLong(location.coords.longitude);
             setLat(location.coords.latitude)
             setLocation(location);
-        
+            _getLocationAsync();
 
         })();
-    }, []);/*
+    }, []);
 
 
-    /* if(props!=undefined){
-        userlocation=JSON.stringify(props);
-         setRegion({
-           
-             longitude:userlocation.longitude,
-             latitude:userlocation.latitude
-         })
- } */
 
-
- React.useEffect(() => {
-    (async () => {
-        let { status } = await Location.requestPermissionsAsync();
-        if (status !== 'granted') {
-            setErrorMsg('Permission to access location was denied');
-            return;
+    const updateUserLocation = (longitude, latitude, userid) => {
+        const data = {
+            longitude,
+            latitude,
+            userid
         }
-        let location = await Location.getCurrentPositionAsync({});
-        setLong(location.coords.longitude);
-        setLat(location.coords.latitude)
-        setLocation(location);
-
-    })();
-}, []);
-
-
-
-    const updateUserLocation  = (longitude,latitude,userid) =>{
-            const data = {
-                longitude,
-                latitude,
-               userid
-            }
-            Firebase.firestore().collection("locations").add(data);
+        Firebase.firestore().collection("locations").add(data);
 
 
     }
 
-   
 
-   
+
+
 
     Firebase.firestore().collection("locations").onSnapshot((snapshot) => {
-        console.log(snapshot.docs[0].data());
+       // console.log(snapshot.docs[0].data());
         const data = snapshot.docs[0].data();
-       
 
-      });
+
+    });
 
     const region = {
         latitude: lat,
@@ -95,57 +98,56 @@ export default function HomeMaps({ route }) {
     }
 
 
-    
-//    const _getLocationAsync = async () => {
 
-//     await Location.startLocationUpdatesAsync("background-location-task", {
-//       enableHighAccuracy: true,
+    const _getLocationAsync = async () => {
 
-//       distanceInterval: 1,
-//       timeInterval: 50
-//     });
-//     const myLocation = await Location.watchPositionAsync(
-//       {
-//         enableHighAccuracy: true,
-//         distanceInterval: 1,
-//         timeInterval: 50
-//       },
-//       newLocation => {
-//         let { coords } = newLocation;
-//         console.log("Testing ....",coords)
-//         let region = {
-//           latitude: coords.latitude,
-//           longitude: coords.longitude,
-//           latitudeDelta: 0.045,
-//           longitudeDelta: 0.045
-//         };
-//       },
-//       error => console.log(error)
-//     );
-//     return myLocation;
-//   };
+        await Location.startLocationUpdatesAsync("background-location-task", {
+            enableHighAccuracy: true,
 
-  fetchDistanceBetweenPoints = (user1lat, user1long, user2lat, user2long) => {
-    var urlToFetchDistance = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='+user1lat+','+user1long+'&destinations='+user2lat+'%2C'+user2long+'&key=' + "YOUR_GOOGLE_DIRECTIONS_API_KEY";
-    fetch(urlToFetchDistance)
+            distanceInterval: 1,
+            timeInterval: 50
+        });
+        const myLocation = await Location.watchPositionAsync(
+            {
+                enableHighAccuracy: true,
+                distanceInterval: 1,
+                timeInterval: 50
+            },
+            newLocation => {
+                let { coords } = newLocation;
+                console.log("Testing ....", coords)
+                let region = {
+                    latitude: coords.latitude,
+                    longitude: coords.longitude,
+
+                };
+            },
+            error => console.log(error)
+        );
+        return myLocation;
+    };
+
+    fetchDistanceBetweenPoints = (user1lat, user1long, user2lat, user2long) => {
+        var urlToFetchDistance = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=' + user1lat + ',' + user1long + '&destinations=' + user2lat + '%2C' + user2long + '&key=' + "AIzaSyAW36-XJlxgmfTpeCo4sYYln2Ub09x1mbg";
+        fetch(urlToFetchDistance)
             .then(res => {
-    return res.json()
-  })
-  .then(res => {
-            var distanceString = res.rows[0].elements[0].distance.text;
-            if(distanceString<=2){
-                Alert("Distance is too short. Social Distancing is recommended");
-                //update locations table using firebase and set alert to any message
-            }
-            //update firebase with another message alert
-  })
-  .catch(error => {
-            console.log("Problem occurred",error);
-  });
+                return res.json()
+            })
+            .then(res => {
+                var distanceString = res.rows[0].elements[0].distance.text;
+                if (distanceString <= 2) {
+                    Alert("Distance is too short. Social Distancing is recommended");
+                    //update locations table using firebase and set alert to any message
+                }
+                //update firebase with another message alert
+            })
+            .catch(error => {
+                console.log("Problem occurred", error);
+            });
 
-}
+    }
 
- 
+
 
     return (
         <MapView
@@ -155,10 +157,10 @@ export default function HomeMaps({ route }) {
             provider={PROVIDER_GOOGLE}
             onMapReady={() => {
                 mapref.current.animateToRegion(region);
-                updateUserLocation(region.longitude, region.latitude,Firebase.auth().currentUser.uid);
+                updateUserLocation(region.longitude, region.latitude, Firebase.auth().currentUser.uid);
             }}
             onRegionChangeComplete={(new_region) => {
-                updateUserLocation( new_region.longitude, new_region.latitude,Firebase.auth().currentUser.uid);
+                updateUserLocation(new_region.longitude, new_region.latitude, Firebase.auth().currentUser.uid);
             }}
 
             initialCamera={{
