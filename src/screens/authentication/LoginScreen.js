@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View, StyleSheet, Dimensions, Alert, ActivityIndicator, ToastAndroid, Platform ,TextInput,SafeAreaView,StatusBar,Image} from "react-native";
+import { Text, TouchableOpacity, View, StyleSheet, Dimensions, Alert, ActivityIndicator, ToastAndroid, Platform, TextInput, SafeAreaView, StatusBar, Image } from "react-native";
 import React from "react";
 import Firebase from '../../../firebase';
 import styles from "../../../styles";
@@ -22,110 +22,113 @@ export default function LoginScreen({ navigation }) {
     // }, [state.isloggedIn])
 
 
-    
+
 
     const signIn = () => {
         try {
-          Firebase
-            .auth() 
-            .signInWithEmailAndPassword(state.email,state.password).then((response)=>{
-                console.log("Login  response",response.user.email)
-                if(response.user.email==="masafat@gmail.com"){
-                    navigation.navigate("AdminPage", {
-                        useremail: state.email
-                    });
-                }
-                navigation.navigate("Home", {
-                useremail: state.email
-            });
-            }).catch((err)=>{
-                
-                Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, ToastAndroid.LONG, ToastAndroid.TOP):
-                Alert.alert(err.message);
-                state.isformcomplete= false; 
-                setState(state);
-            })
+            Firebase
+                .auth()
+                .signInWithEmailAndPassword(state.email, state.password).then((response) => {
+                    console.log("Login  response", response.user.email)
+                    if (response.user.email === "msafat@gmail.com") {
+                        navigation.navigate("AdminPage", {
+                            useremail: state.email
+                        });
+                    }
+         
+                        navigation.navigate("Home", {
+                            useremail: state.email
+                        });
+                    
+
+                }).catch((err) => {
+
+                    Platform.OS == "android" ? ToastAndroid.showWithGravity(err.message, ToastAndroid.LONG, ToastAndroid.TOP) :
+                        Alert.alert(err.message);
+                    state.isformcomplete = false;
+                    setState(state);
+                })
         } catch (err) {
-          
-          Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, ToastAndroid.LONG, ToastAndroid.TOP):
-          Alert.alert(err.message);
-          state.isformcomplete= false; 
-          setState(state);
+
+            Platform.OS == "android" ? ToastAndroid.showWithGravity(err.message, ToastAndroid.LONG, ToastAndroid.TOP) :
+                Alert.alert(err.message);
+            state.isformcomplete = false;
+            setState(state);
         }
-      }
+    }
 
     return (
-    
+
         <SafeAreaView style={styles.safeContainer}>
-        <StatusBar barStyle="light-content" backgroundColor={'#172774'}/>
-        <View style={styles.container}>
-        <View style={styles.boxheader}>
-        <Image
-        style={styles.tinyLogo}
-        source={require('../../../assets/logo.png')}
-      />
-        </View>
+            <StatusBar barStyle="light-content" backgroundColor={'#172774'} />
+            <View style={styles.container}>
+                <View style={styles.boxheader}>
+                    <Image
+                        style={styles.tinyLogo}
+                        source={require('../../../assets/logo.png')}
+                    />
+                </View>
 
 
 
-      
-        <View style={styles.loginbox}>
-        <Text style={styles.tile}>Login Please Here</Text>
 
-            <View style = {styles.button}>
-            <TextInput placeholder="Enter your email" onChange={value => {
-                setState({
-                    ...state,
-                    email: value.nativeEvent.text.toString()
-                })
-            }} keyboardType="default" value={state.email} />
-            </View>
+                <View style={styles.loginbox}>
+                    <Text style={styles.tile}>Login Please Here</Text>
 
-            <View style = {styles.button}>
-            <TextInput placeholder="Enter your Password" 
-             onChange={value => {
-                setState({
-                    ...state,
-                    password: value.nativeEvent.text.toString()
-                })
-            }} value={state.password} secureTextEntry={true} />
-            </View>
+                    <View style={styles.button}>
+                        <TextInput placeholder="Enter your email" onChange={value => {
+                            setState({
+                                ...state,
+                                email: value.nativeEvent.text.toString()
+                            })
+                        }} keyboardType="default" value={state.email} />
+                    </View>
 
-            {state.isformcomplete ? <ActivityIndicator size="large" color="#0000ff" /> :
-                <TouchableOpacity 
-                style={[styles.login, {backgroundColor:'#F66095'}]}
-                                onPress={() => {
-                    if (state.email.length > 0 && state.password.length > 0) {
-                        setState({
-                            ...state,
-                            isformcomplete: true
-                        });
-                       
-                       //signIn(state.username,state.password);
-                       signIn();
+                    <View style={styles.button}>
+                        <TextInput placeholder="Enter your Password"
+                            onChange={value => {
+                                setState({
+                                    ...state,
+                                    password: value.nativeEvent.text.toString()
+                                })
+                            }} value={state.password} secureTextEntry={true} />
+                    </View>
+
+                    {state.isformcomplete ? <ActivityIndicator size="large" color="#0000ff" /> :
+                        <TouchableOpacity
+                            style={[styles.login, { backgroundColor: '#F66095' }]}
+                            onPress={() => {
+                                if (state.email.length > 0 && state.password.length > 0) {
+                                    setState({
+                                        ...state,
+                                        isformcomplete: true
+                                    });
+
+                                    //signIn(state.username,state.password);
+                                    signIn();
+                                }
+                                else {
+                                    Alert.alert("Invalid or Empty email or password")
+                                }
+
+                            }} >
+                            <Text style={{ textAlign: 'center', marginTop: 15, fontSize: 20 }}>Login</Text>
+                        </TouchableOpacity>
                     }
-                    else {
-                        Alert.alert("Invalid or Empty email or password")
-                    }
 
-                }} >
-                   <Text style={{textAlign:'center',marginTop:15, fontSize:'20'}}>Login</Text>
-                </TouchableOpacity>
-            }
-
-<Text style ={{textAlign:'left',color:'#fff', marginLeft:10}}>you don't have an account <Text style={{color:'red'}} onPress={() => navigation.navigate("Register")}>Please RegisterYour Account</Text></Text>
+                    <Text style={{ textAlign: 'left', color: '#fff', marginLeft: 10 }}>you don't have an account <Text style={{ color: 'red' }} onPress={() => navigation.navigate("Register")}>Please RegisterYour Account</Text></Text>
 
 
-            <View style={styles.rowtexts}>
-                <Text style={{textAlign:'center',marginTop:15, fontSize:'16'}}>Don't Have an account? </Text>
-                <Text style={{textAlign:'center',marginTop:15, fontSize:'16'}} onPress={() => navigation.navigate("Register")}>Create Account Here</Text>
+                    <View style={styles.rowtexts}>
+                        <Text style={{ textAlign: 'center', marginTop: 15, fontSize: 16 }}>Don't Have an account? </Text>
+                        <Text style={{ textAlign: 'center', marginTop: 15, fontSize: 16 }} onPress={() => navigation.navigate("Register")}>Create Account Here</Text>
+                    </View>
+
+                </View>
+
             </View>
-
-        </View>
-     
-        </View>
 
 
         </SafeAreaView>
-    ); 
-        }
+    );
+}

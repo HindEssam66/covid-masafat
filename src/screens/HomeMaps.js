@@ -1,9 +1,11 @@
-import React from "react";
+
+import React, { useCallback, useState } from 'react';
 import { View, I18nManager, StyleSheet, Dimensions, Alert } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from "expo-location"
 import Utils from "../utils/Utils";
 import Firebase from "../../firebase";
+
 
 
 const dimensions = Dimensions.get("window");
@@ -12,14 +14,19 @@ export default function HomeMaps({ route }) {
 
 
     const distance_url = ""
-    const [lat, setLat] = React.useState(31.96315);
-    const [lgtd, setLong] = React.useState(35.930359);
+    const [region, setRegion] = React.useState({});
     const mapref = React.useRef(null);
     let { width, height } = Dimensions.get('window');
     const aspect_ratio = width / height;
     const latDelta = 0
     const longDelta = latDelta * aspect_ratio;
-    const [location, setLocation] = React.useState(null);
+   // const [location, setLocation] = React.useState(null);
+   
+   const [location, setLocation] = React.useState({ lgtd: "", lat: "" })
+   const callback = useCallback((location) => {
+       // this is the location what you need ;
+
+   }, []);
 
     /* React.useEffect(() => {
           (async () => {
@@ -49,33 +56,69 @@ export default function HomeMaps({ route }) {
            })
    } */
 
-
+const[timer,setTimer]=useState(0);
     React.useEffect(() => {
-        (async () => {
-            let { status } = await Location.requestPermissionsAsync();
-            if (status !== 'granted') {
-                setErrorMsg('Permission to access location was denied');
-                return;
-            }
-            let location = await Location.getCurrentPositionAsync({});
-            setLong(location.coords.longitude);
-            setLat(location.coords.latitude)
-            setLocation(location);
-            _getLocationAsync();
 
-        })();
-    }, []);
+        let currentInterval= setInterval(() => {
+                getMyLocation().then((myRegion) => {
+                    const myLocalLocation = location;
+                    setLocation(myRegion);
+                    console.log( "My Region: ", myRegion);
+                    if (myLocalLocation.lgtd !== myRegion.longitude || myLocalLocation.lat !== myRegion.latitude) {
+                        updateUserLocation(myRegion);
+                        console.log( "My Region: ", myRegion);
+                    }
+        setTimer(timer+1)
+                }).catch((err) => {
+                    console.log("Error : ", err);
+                })
+            }, 2000);
+            return () => clearInterval(currentInterval);
+  
+
+         },[timer] );
+    
 
 
-
-    const updateUserLocation = (longitude, latitude, userid) => {
-        const data = {
-            longitude,
-            latitude,
-            userid
+    async function getMyLocation() {
+        let { status } = await Location.requestPermissionsAsync();
+        if (status !== 'granted') {
+            setErrorMsg('Permission to access location was denied');
+            return;
         }
-        Firebase.firestore().collection("locations").add(data);
+        let location = await Location.getCurrentPositionAsync({/*LocationAccuracy : Accuracy.BestForNavigation*/}
+            );
+        const myRegion = {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            longitudeDelta: longDelta,
+            latitudeDelta: latDelta,
+        };
+        setRegion(myRegion);
 
+       return(myRegion)
+
+
+    }
+
+
+
+ 
+    const updateUserLocation = (longitude, latitude, userid) => {
+try {
+    const data = {
+        longitude,
+        latitude,
+        userid
+    }
+    console.log(data);
+    Firebase.firestore().collection("locations").add(data);
+} catch (error) {
+    console.log(error.stack);
+    
+}
+
+        
 
     }
 
@@ -84,50 +127,46 @@ export default function HomeMaps({ route }) {
 
 
     Firebase.firestore().collection("locations").onSnapshot((snapshot) => {
-       // console.log(snapshot.docs[0].data());
+        // console.log(snapshot.docs[0].data());
         const data = snapshot.docs[0].data();
 
 
     });
 
-    const region = {
-        latitude: lat,
-        longitude: lgtd,
-        longitudeDelta: longDelta,
-        latitudeDelta: latDelta,
-    }
 
 
 
-    const _getLocationAsync = async () => {
 
-        await Location.startLocationUpdatesAsync("background-location-task", {
-            enableHighAccuracy: true,
+    /* const _getLocationAsync = async () => {
+ 
+         await Location.startLocationUpdatesAsync("background-location-task", {
+             enableHighAccuracy: true,
+ 
+             distanceInterval: 1,
+             timeInterval: 50
+         });
+         const myLocation = await Location.watchPositionAsync(
+             {
+                 enableHighAccuracy: true,
+                 distanceInterval: 1,
+                 timeInterval: 50
+             },
+             newLocation => {
+                 let { coords } = newLocation;
+                 console.log("Testing ....", coords)
+                 let region = {
+                     latitude: coords.latitude,
+                     longitude: coords.longitude,
+ 
+                 };
+             },
+             error => console.log(error)
+         );
+         return myLocation;
+     };
+     */
 
-            distanceInterval: 1,
-            timeInterval: 50
-        });
-        const myLocation = await Location.watchPositionAsync(
-            {
-                enableHighAccuracy: true,
-                distanceInterval: 1,
-                timeInterval: 50
-            },
-            newLocation => {
-                let { coords } = newLocation;
-                console.log("Testing ....", coords)
-                let region = {
-                    latitude: coords.latitude,
-                    longitude: coords.longitude,
-
-                };
-            },
-            error => console.log(error)
-        );
-        return myLocation;
-    };
-
-    fetchDistanceBetweenPoints = (user1lat, user1long, user2lat, user2long) => {
+    /*fetchDistanceBetweenPoints = (user1lat, user1long, user2lat, user2long) => {
         var urlToFetchDistance = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=' + user1lat + ',' + user1long + '&destinations=' + user2lat + '%2C' + user2long + '&key=' + "AIzaSyAW36-XJlxgmfTpeCo4sYYln2Ub09x1mbg";
         fetch(urlToFetchDistance)
             .then(res => {
@@ -145,11 +184,11 @@ export default function HomeMaps({ route }) {
                 console.log("Problem occurred", error);
             });
 
-    }
+    }*/
 
 
 
-    return (
+    return region.latitude && region.longitude ?(
         <MapView
             style={styles.map}
             region={region}
@@ -157,7 +196,7 @@ export default function HomeMaps({ route }) {
             provider={PROVIDER_GOOGLE}
             onMapReady={() => {
                 mapref.current.animateToRegion(region);
-                updateUserLocation(region.longitude, region.latitude, Firebase.auth().currentUser.uid);
+               //r updateUserLocation(region.longitude, region.latitude, Firebase.auth().currentUser.uid);
             }}
             onRegionChangeComplete={(new_region) => {
                 updateUserLocation(new_region.longitude, new_region.latitude, Firebase.auth().currentUser.uid);
@@ -174,14 +213,15 @@ export default function HomeMaps({ route }) {
 
         >
 
-            <Marker coordinate={{
-                latitude: region.latitude,
-                longitude: region.longitude
-            }} description={
-                route.params.loggedInUser
-            } draggable={true} />
+                <Marker coordinate={{
+                    latitude: region.latitude,
+                    longitude: region.longitude
+                }} description={
+                    route.params.loggedInUser
+                } draggable={true} />
+            
         </MapView>
-    );
+    ): null;
 
 
 }
