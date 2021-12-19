@@ -29,8 +29,8 @@ export default function LoginScreen({ navigation }) {
             Firebase
                 .auth()
                 .signInWithEmailAndPassword(state.email, state.password).then((response) => {
-                    console.log("Login  response", response.user.email)
-                    if (response.user.email.includes("msafat@gmail.com")) {
+                    console.log("Login  response", response.user.role) 
+                    if (response.user.role === 1) {
                         navigation.navigate("AdminPage", {
                             useremail: state.email
                         });

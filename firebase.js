@@ -5,14 +5,17 @@ import "firebase/firestore";
 
 
 const firebaseConfig = {
-    apiKey: "AIzaSyA0_ZAO3wgRlLdvymaJIyKLEgqfqNtUdvY",
-    authDomain: "masafat-332616.firebaseapp.com",
-    projectId: "masafat-332616",
-    storageBucket: "masafat-332616.appspot.com",
-    messagingSenderId: "781240351972",
-    appId: "1:781240351972:web:acf144920664fb013f00f1",
-    measurementId: "${config.measurementId}"
+
+  apiKey: "AIzaSyChh0vLQewi4WrtZIuOQEJuHsoaCQ-bcVk",
+  authDomain: "clever-acolyte-332717.firebaseapp.com",
+  projectId: "clever-acolyte-332717",
+  storageBucket: "clever-acolyte-332717.appspot.com",
+  messagingSenderId: "367964093415",
+  appId: "1:367964093415:web:0093b532ed4a6d66721b42",
+  measurementId: "G-BSFVMK383E"
 };
+
+
 
 
 let Firebase ;

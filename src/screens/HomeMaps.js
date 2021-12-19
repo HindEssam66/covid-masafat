@@ -63,10 +63,10 @@ const[timer,setTimer]=useState(0);
                 getMyLocation().then((myRegion) => {
                     const myLocalLocation = location;
                     setLocation(myRegion);
-                    console.log( "My Region: ", myRegion);
+                   // console.log( "My Region: ", myRegion);
                     if (myLocalLocation.lgtd !== myRegion.longitude || myLocalLocation.lat !== myRegion.latitude) {
                         updateUserLocation(myRegion);
-                        console.log( "My Region: ", myRegion);
+                        //console.log( "My Region: ", myRegion);
                     }
         setTimer(timer+1)
                 }).catch((err) => {
@@ -111,7 +111,7 @@ try {
         latitude,
         userid
     }
-    console.log(data);
+   // console.log(data);
     Firebase.firestore().collection("locations").add(data);
 } catch (error) {
     console.log(error.stack);
