@@ -12,34 +12,31 @@ export default function RegisterScreen({ navigation }) {
         email: "",
         formComplete: false
     });
-
-    
-
-    const registeration  = () =>{
-        Firebase.auth().createUserWithEmailAndPassword(state.email,state.password).then((response )=>{
+    const registeration = () => {
+        Firebase.auth().createUserWithEmailAndPassword(state.email, state.password).then((response) => {
             const currentUser = Firebase.auth().currentUser;
             Firebase.firestore().collection("users").doc(currentUser.uid).set({
-                email:state.email,
-                username:state.username
-            }).then((resp)=>{
-                Platform.OS=="android"? ToastAndroid.showWithGravity("user added successfully", Toast.LONG, Toast.TOP):
-                Alert.alert("user added successfully");
+                email: state.email,
+                username: state.username
+            }).then((resp) => {
+                Platform.OS == "android" ? ToastAndroid.showWithGravity("user added successfully", Toast.LONG, Toast.TOP) :
+                    Alert.alert("user added successfully");
                 navigation.navigate("Login");
-            }).catch((err)=>{
-                Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, Toast.LONG, Toast.TOP):
-                Alert.alert(err.message);
-                state.formComplete= false; 
+            }).catch((err) => {
+                Platform.OS == "android" ? ToastAndroid.showWithGravity(err.message, Toast.LONG, Toast.TOP) :
+                    Alert.alert(err.message);
+                state.formComplete = false;
                 setState(state);
             })
-        }).catch((err)=>{
-            Platform.OS=="android"? ToastAndroid.showWithGravity(err.message, Toast.LONG, Toast.TOP):
-            Alert.alert(err.message);
-        
-            state.formComplete= false;
+        }).catch((err) => {
+            Platform.OS == "android" ? ToastAndroid.showWithGravity(err.message, Toast.LONG, Toast.TOP) :
+                Alert.alert(err.message);
+
+            state.formComplete = false;
             setState(state);
         })
-        
-    } 
+
+    }
 
 
     return (
@@ -47,7 +44,8 @@ export default function RegisterScreen({ navigation }) {
             <View style={{ ...styles.registerView }}>
                 <Text style={{
                     ...styles.heading,
-                    marginBottom: 10
+                    marginBottom: 10,
+                    color: "white"
                 }}>Create Account</Text>
                 <TextInput placeholder="Email Address" style={styles.inputSize} onChange={value => {
                     setState({
@@ -74,7 +72,7 @@ export default function RegisterScreen({ navigation }) {
                                 ...state,
                                 formComplete: true
                             });
-                           // register(state.username, state.password);
+                            // register(state.username, state.password);
                             registeration();
                         }
                         else {
@@ -96,7 +94,7 @@ export default function RegisterScreen({ navigation }) {
 }
 const styles = StyleSheet.create({
     container: {
-        flex: 1,    backgroundColor: '#172774',
+        flex: 1, backgroundColor: '#172774',
 
     },
     registerView: {
@@ -110,23 +108,24 @@ const styles = StyleSheet.create({
     },
     heading: {
         fontSize: 27,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        color: "white"
     },
     inputSize: {
-        height: 50,
-        margin: 10,
-        width: dimensions.width * .8,
+        width: dimensions.width - 40,
+        borderRadius: 25,
+        padding: 10,
+        margin: 5,
         backgroundColor: "#E5E8E8",
-        borderRadius: 5
     },
     registerbutton: {
         padding: 15,
         margin: 10,
-        borderRadius: 5,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "#3DA4EC",
-        width: dimensions.width * .8,
+        width: dimensions.width - 40,
+        borderRadius: 25,
     },
     registerText: {
         fontSize: 20,

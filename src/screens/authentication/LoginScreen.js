@@ -30,28 +30,25 @@ export default function LoginScreen({ navigation }) {
                 .auth()
                 .signInWithEmailAndPassword(state.email, state.password).then((response) => {
                     console.log("Login  response", response.user.email)
-                    if (response.user.email === "msafat@gmail.com") {
+                    if (response.user.email.includes("msafat@gmail.com")) {
                         navigation.navigate("AdminPage", {
                             useremail: state.email
                         });
                     }
-         
-                        navigation.navigate("Home", {
-                            useremail: state.email
-                        });
-                    
+                    navigation.navigate("Home", {
+                        useremail: state.email
+                    });
 
                 }).catch((err) => {
 
-                    Platform.OS == "android" ? ToastAndroid.showWithGravity(err.message, ToastAndroid.LONG, ToastAndroid.TOP) :
-                        Alert.alert(err.message);
+                    Platform.OS == "android" ? ToastAndroid.showWithGravity("User with the password doesn't exist", ToastAndroid.LONG, ToastAndroid.TOP) :
+                        Alert.alert("User with the password doesn't exists");
                     state.isformcomplete = false;
                     setState(state);
                 })
         } catch (err) {
-
-            Platform.OS == "android" ? ToastAndroid.showWithGravity(err.message, ToastAndroid.LONG, ToastAndroid.TOP) :
-                Alert.alert(err.message);
+            Platform.OS == "android" ? ToastAndroid.showWithGravity("User with the password doesn't exist", ToastAndroid.LONG, ToastAndroid.TOP) :
+                Alert.alert("User with the password doesn't exists");
             state.isformcomplete = false;
             setState(state);
         }
@@ -68,9 +65,6 @@ export default function LoginScreen({ navigation }) {
                         source={require('../../../assets/logo.png')}
                     />
                 </View>
-
-
-
 
                 <View style={styles.loginbox}>
                     <Text style={styles.tile}>Login Please Here</Text>
@@ -112,17 +106,19 @@ export default function LoginScreen({ navigation }) {
                                 }
 
                             }} >
-                            <Text style={{ textAlign: 'center', marginTop: 15, fontSize: 20 }}>Login</Text>
+                            <Text style={{
+                                fontSize: 20,
+                                fontWeight: "bold"
+                            }}>Login</Text>
                         </TouchableOpacity>
                     }
-
-                    <Text style={{ textAlign: 'left', color: '#fff', marginLeft: 10 }}>you don't have an account <Text style={{ color: 'red' }} onPress={() => navigation.navigate("Register")}>Please RegisterYour Account</Text></Text>
-
-
-                    <View style={styles.rowtexts}>
-                        <Text style={{ textAlign: 'center', marginTop: 15, fontSize: 16 }}>Don't Have an account? </Text>
-                        <Text style={{ textAlign: 'center', marginTop: 15, fontSize: 16 }} onPress={() => navigation.navigate("Register")}>Create Account Here</Text>
+                    <View style={{
+                        alignItems: "center"
+                    }}>
+                        <Text style={{ textAlign: 'left', color: '#fff', marginLeft: 10 }}>You don't have an account?
+                            <Text style={{ color: 'red' }} onPress={() => navigation.navigate("Register")}> Create an account here</Text></Text>
                     </View>
+
 
                 </View>
 
