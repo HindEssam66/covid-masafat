@@ -10,14 +10,16 @@ export default function RegisterScreen({ navigation }) {
         username: "",
         password: "",
         email: "",
-        formComplete: false
+        role : 3,
+        formComplete: false 
     });
     const registeration = () => {
         Firebase.auth().createUserWithEmailAndPassword(state.email, state.password).then((response) => {
             const currentUser = Firebase.auth().currentUser;
             Firebase.firestore().collection("users").doc(currentUser.uid).set({
                 email: state.email,
-                username: state.username
+                username: state.username,
+                role : state.role
             }).then((resp) => {
                 Platform.OS == "android" ? ToastAndroid.showWithGravity("user added successfully", Toast.LONG, Toast.TOP) :
                     Alert.alert("user added successfully");
